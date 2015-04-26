@@ -3,11 +3,13 @@ package api
 import (
 	. "../config"
 	"github.com/secondarykey/davgo"
+	"io/ioutil"
 	"log"
+	"strings"
 )
 
 const (
-	BASE = "/dav"
+	BASE = "/dav/"
 )
 
 var (
@@ -28,11 +30,28 @@ func getSession() *davgo.Session {
 	return session
 }
 
-func Listdir(path string) error {
+func Listdir(path string) ([]davgo.FileInfo, error) {
 	dirs, err := getSession().Listdir(path)
-	log.Println(dirs)
-	for _, elm := range dirs {
-		log.Println(elm)
+	if err != nil {
+		log.Println(err)
 	}
-	return err
+	return dirs, nil
+}
+
+func Get(name string) ([]byte, error) {
+	reader, err := getSession().NewReader(name)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := ioutil.ReadAll(*reader)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func RequestName(name string) string {
+	return strings.Replace(name, BASE, "", -1)
 }
