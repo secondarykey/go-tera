@@ -9,10 +9,20 @@ import (
 	"os"
 )
 
+func init() {
+	log.SetFlags(log.Lshortfile)
+}
+
 func main() {
 
-	log.SetFlags(log.Lshortfile)
-	err := Load("tera.ini")
+	// flags
+	err := Setting()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	err = Load("tera.ini")
 	if err != nil {
 		log.Println(err)
 		return
